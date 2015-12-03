@@ -2,6 +2,8 @@ package se.joafre.movieservice.repository;
 
 import se.joafre.movieservice.model.Actor;
 import se.joafre.movieservice.model.Movie;
+import se.joafre.movieservice.utility.Mapper;
+import se.joafre.movieservice.utility.Query;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -13,71 +15,43 @@ import java.util.List;
 public final class MovieRepositoryImpl implements MovieRepository {
 
 //    private final static String driver = "com.mysql.jdbc.Driver";
-    private final static String URL = "jdbc:mysql://localhost/MovieServiceDatabase";
-    private final static  String USERNAME = "root";
-    private final static String PASSWORD = "hannele1";
+    private final static String URL = "jdbc:mysql://localhost/MovieServiceDatabase?user=root&password=root";
     private final List<Movie> movies = new ArrayList<>();
     private final List<Long> movieKeys = new ArrayList<>();
 
+    private static final Mapper<Movie> MOVIE_MAPPER = new Mapper<Movie>() {
+        @Override
+        public Movie map(ResultSet resultSet) throws SQLException {
+            return new Movie(resultSet.getInt(1), resultSet.getString(2), resultSet.getInt(3), resultSet.getString(4));
+        }
+    };
+
+    final Mapper<Integer> countMapper = new Mapper<Integer>() {
+        @Override
+        public Integer map(ResultSet resultSet) throws SQLException {
+            return new Integer(resultSet.getInt(1));
+        }
+    };
 
     public List<Movie> getAllMovies() {
-        try(Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD))
-        {
-            Statement statement = connection.createStatement();
-            String sql = "SELECT Movie.id, title, productionYear, name  from Movie JOIN Genre ON Movie.genreId= Genre.id";
-            try(ResultSet resultSet = statement.executeQuery(sql))
-            {
-                while(resultSet.next())
-                {
-                    int id = resultSet.getInt("id");
-                    String title = resultSet.getString("title");
-                    int productionYear = resultSet.getInt("productionYear");
-                    String genre = resultSet.getString("name");
-
-                    Movie movie = new Movie(id, title, productionYear, genre);
-                    movies.add(movie);
-                    System.out.println(movie.toString());
-
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return movies;
+        String sql = "SELECT Movie.id, title, productionYear, name  from Movie JOIN Genre ON Movie.genreId= Genre.id";
+        return new Query<Movie>(URL).mapper(MOVIE_MAPPER).query(sql).execute();
     }
 
     @Override
     public Movie getMovieById(int id) {
-        try(Connection connection =DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
-
-            String sql = "SELECT Movie.id, title, productionYear, name FROM Movie JOIN Genre ON Movie.genreId = Genre.id " +
+        String sql = "SELECT Movie.id, title, productionYear, name FROM Movie JOIN Genre ON Movie.genreId = Genre.id " +
                     "WHERE Movie.id = ?";
-            PreparedStatement statement = connection.prepareStatement(sql);
-
-            statement.setInt(1, id);
-
-            ResultSet resultSet = statement.executeQuery(sql);
-
-            if(resultSet.next()){
-
-                int movieId = resultSet.getInt("id");
-                String title = resultSet.getString("title");
-                int productionYear = resultSet.getInt("productionYear");
-                String genre = resultSet.getString("name");
-                return new Movie(movieId, title, productionYear, genre);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return new Query<Movie>(URL).mapper(MOVIE_MAPPER).query(sql).execute().get(0);
     }
 
     public void persistMovie(Movie movie) {
         if(genreExists(movie.getGenre())) {
-
             String sql = "INSERT INTO Movie (title, productionYear, genreId) VALUES (?,?,?)";
             int genreId = getGenreId(movie.getGenre());
-            try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+            new Query<Object>(URL).query(sql).parameter(movie.getTitle()).parameter(movie.getProductionYear())
+                    .parameter(genreId).update();
+            /* try (Connection connection = DriverManager.getConnection(URL)) {
 
                 connection.setAutoCommit(false);
 
@@ -110,6 +84,7 @@ public final class MovieRepositoryImpl implements MovieRepository {
             }
 
 
+        }*/
         }
     }
 
@@ -119,7 +94,7 @@ public final class MovieRepositoryImpl implements MovieRepository {
         int success =0;
         int genreId = getGenreId(movie.getGenre());
 
-        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+        try (Connection connection = DriverManager.getConnection(URL)) {
             connection.setAutoCommit(false);
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
@@ -145,7 +120,7 @@ public final class MovieRepositoryImpl implements MovieRepository {
     }
 
     public int deleteMovie(int id) {
-        try(Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+        try(Connection connection = DriverManager.getConnection(URL)) {
             String sql = "DELETE FROM Movie WHERE id = ?";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, id);
@@ -179,7 +154,7 @@ public final class MovieRepositoryImpl implements MovieRepository {
 
     @Override
     public int addGenre(String genre) {
-        try(Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+        try(Connection connection = DriverManager.getConnection(URL)) {
             String sql = "INSERT INTO Genre (name) VALUES (?)";
             PreparedStatement statement = connection.prepareStatement(sql);
 
@@ -195,34 +170,20 @@ public final class MovieRepositoryImpl implements MovieRepository {
 
     private boolean genreExists(String genre)
     {
-        int count = 0;
-        try(Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD))
-        {
-            String sql = "SELECT COUNT(*) FROM Genre WHERE name =?";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, genre);
-            try(ResultSet resultSet = statement.executeQuery(sql))
-            {
-                while (resultSet.next())
-                {
-                    count = resultSet.getInt(1);
-                }
-            }
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
+
+        String sql = "SELECT COUNT(*) FROM Genre WHERE name =?";
 
 
-        return count > 0;
-
+        return new Query<Integer>(URL).query(sql).mapper(countMapper).parameter(genre).execute().get(0) > 0;
     }
 
     private int getGenreId(String genreName) {
-        int genreId = 0;
+        int genreId;
+        String sql = "select id from Genre where name =?";
 
-        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
-            String sql = "select id from Genre where name =?";
+        genreId = new Query<Integer>(URL).mapper(countMapper).parameter(genreName).query(sql).execute().get(0);
+
+        /* try (Connection connection = DriverManager.getConnection(URL)) {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, genreName);
             try (ResultSet rs = statement.executeQuery(sql)) {
@@ -232,7 +193,7 @@ public final class MovieRepositoryImpl implements MovieRepository {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }
+        } */
 
         return genreId;
 

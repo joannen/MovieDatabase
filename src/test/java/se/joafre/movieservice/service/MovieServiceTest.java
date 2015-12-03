@@ -50,7 +50,7 @@ public class MovieServiceTest {
         movieList.add(movie);
         when(movieRepositoryMock.getAllMovies()).thenReturn(movieList);
 
-        assertThat(movieService.getAll(), equalTo(movieList));
+        assertThat(movieService.getAllMovies(), equalTo(movieList));
 
         verify(movieRepositoryMock).getAllMovies();
     }
@@ -61,7 +61,7 @@ public class MovieServiceTest {
         movieService.persist(movie);
        when(movieRepositoryMock.getAllMovies()).thenReturn(movieList);
 
-        assertThat(movieService.getAll(), equalTo(movieList));
+        assertThat(movieService.getAllMovies(), equalTo(movieList));
 
         verify(movieRepositoryMock).persistMovie(movie);
         verify(movieRepositoryMock).getAllMovies();

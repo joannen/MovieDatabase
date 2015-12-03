@@ -1,9 +1,8 @@
-package se.joafre.movieservice;
+package se.joafre.movieservice.utility;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by joanne on 03/12/15.
@@ -49,6 +48,19 @@ public final class Query<T> {
             e.printStackTrace();
         }
         return result;
+    }
+
+    public int update() {
+        int success = 0;
+        try (Connection conn = DriverManager.getConnection(connectionString)) {
+            PreparedStatement statement = createStatement(conn);
+            success = statement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return success;
     }
 
     private PreparedStatement createStatement(Connection connection) throws SQLException {

@@ -1,4 +1,4 @@
-package se.joafre.movieservice;
+package se.joafre.movieservice.utility;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

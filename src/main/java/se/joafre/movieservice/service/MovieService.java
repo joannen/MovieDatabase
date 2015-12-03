@@ -17,7 +17,7 @@ public final class MovieService{
     }
 
 
-    public List<Movie> getAll() {
+    public List<Movie> getAllMovies() {
         return movieRepository.getAllMovies();
     }
 

@@ -45,12 +45,15 @@ public final class MovieRepositoryImpl implements MovieRepository {
         return new Query<Movie>(URL).mapper(MOVIE_MAPPER).query(sql).execute().get(0);
     }
 
-    public void persistMovie(Movie movie) {
+    public  persistMovie(Movie movie) {
         if(genreExists(movie.getGenre())) {
             String sql = "INSERT INTO Movie (title, productionYear, genreId) VALUES (?,?,?)";
             int genreId = getGenreId(movie.getGenre());
-            new Query<Object>(URL).query(sql).parameter(movie.getTitle()).parameter(movie.getProductionYear())
-                    .parameter(genreId).update();
+            new Query<Movie>(URL).query(sql)
+                    .parameter(movie.getTitle())
+                    .parameter(movie.getProductionYear())
+                    .parameter(genreId)
+                    .update();
             /* try (Connection connection = DriverManager.getConnection(URL)) {
 
                 connection.setAutoCommit(false);
@@ -91,10 +94,15 @@ public final class MovieRepositoryImpl implements MovieRepository {
 
     public int updateMovie(Movie movie) {
         String sql = "UPDATE Movie SET title = ?, productionYear = ?, genreId = ? WHERE Movie.id =?";
-        int success =0;
         int genreId = getGenreId(movie.getGenre());
+        return new Query<Movie>(URL).query(sql)
+                .parameter(movie.getTitle())
+                .parameter(movie.getProductionYear())
+                .parameter(genreId)
+                .parameter(movie.getId())
+                .update();
 
-        try (Connection connection = DriverManager.getConnection(URL)) {
+        /* try (Connection connection = DriverManager.getConnection(URL)) {
             connection.setAutoCommit(false);
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
@@ -115,8 +123,9 @@ public final class MovieRepositoryImpl implements MovieRepository {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-        return success;
+        } */
+
+        return new Query<Movie>(URL).query(sql).update(movie);
     }
 
     public int deleteMovie(int id) {
@@ -170,32 +179,12 @@ public final class MovieRepositoryImpl implements MovieRepository {
 
     private boolean genreExists(String genre)
     {
-
         String sql = "SELECT COUNT(*) FROM Genre WHERE name =?";
-
-
-        return new Query<Integer>(URL).query(sql).mapper(countMapper).parameter(genre).execute().get(0) > 0;
+        return new Query<Integer>(URL).query(sql).mapper(countMapper).parameter(genre).execute().get(0) == 1;
     }
 
     private int getGenreId(String genreName) {
-        int genreId;
         String sql = "select id from Genre where name =?";
-
-        genreId = new Query<Integer>(URL).mapper(countMapper).parameter(genreName).query(sql).execute().get(0);
-
-        /* try (Connection connection = DriverManager.getConnection(URL)) {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, genreName);
-            try (ResultSet rs = statement.executeQuery(sql)) {
-                while (rs.next()) {
-                    genreId = rs.getInt(1);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } */
-
-        return genreId;
-
+        return new Query<Integer>(URL).mapper(countMapper).parameter(genreName).query(sql).execute().get(0);
     }
 }

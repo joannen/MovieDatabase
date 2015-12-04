@@ -55,7 +55,6 @@ public final class Query<T> {
         try (Connection conn = DriverManager.getConnection(connectionString)) {
             PreparedStatement statement = createStatement(conn);
             success = statement.executeUpdate();
-
         } catch (SQLException e) {
             e.printStackTrace();
         }

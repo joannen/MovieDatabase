@@ -69,7 +69,7 @@ public class MovieServiceTest {
 
     @org.junit.Test
     public void testUpdate() throws Exception {
-        when(movieRepositoryMock.updateMovie(movie)).thenReturn(1);
+        when(movieRepositoryMock.updateMovie(movie)).thenReturn(true);
 
         assertThat(movieService.update(movie), equalTo(1));
 
@@ -78,7 +78,7 @@ public class MovieServiceTest {
 
     @org.junit.Test
     public void testDelete() throws Exception {
-        when(movieRepositoryMock.deleteMovie(1)).thenReturn(1);
+        when(movieRepositoryMock.deleteMovie(1)).thenReturn(true);
         assertThat(movieService.delete(1), equalTo(1));
         verify(movieRepositoryMock).deleteMovie(1);
     }

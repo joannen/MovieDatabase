@@ -16,9 +16,9 @@ public interface MovieRepository {
 
     boolean persistMovie(Movie movie);
 
-    int updateMovie(Movie movie);
+    boolean updateMovie(Movie movie);
 
-    int deleteMovie(int id);
+    boolean deleteMovie(int id);
 
     List<Actor> getAllActors();
 

@@ -27,43 +27,14 @@ public final class Runner {
 
     public static void main(String[] args) {
 
-        final String connectionString = "jdbc:mysql://localhost/MovieServiceDatabase?user=root&password=root";
-        final String sql = "SELECT Movie.id, title, productionYear, name  from Movie JOIN Genre" +
-                            " ON Movie.genreId= Genre.id";
-        List<Movie> movieList = new Query<Movie>(connectionString).query(sql).mapper(movieMapper).execute();
-
-        /* for(Movie movie: movieList){
-            System.out.println(movie.toString());
-        } */
-
-
-
         MovieRepository movieRepository = new MovieRepositoryImpl();
-        MovieService movieService = new MovieService(movieRepository);
+        MovieService ms = new MovieService(movieRepository);
 
-        for (Movie movie : movieService.getAllMovies()) {
+        ms.persist(new Movie("wat", 1999, "Action"));
+
+        for (Movie movie : ms.getAllMovies()) {
             System.out.println(movie);
         }
-        Movie movie = new Movie("Back to the Future", 1985, "action");
-
-        movieService.persist(movie);
-        movieService.persist(movie);
-        movieService.persist(movie);
-
-        for (Movie movieOne : movieService.getAllMovies()) {
-            System.out.println(movieOne);
-        }
-//        Movie movie1 = new Movie(1, "Back to the Past", 1985, "action");
-////        movieService.persist(movie);
-////        movieService.getAllMovies();
-//        movieService.update(movie1);
-////        movieService.getAllMovies();
-//        movieService.delete(1);
-////        movieService.getAllMovies();
-////        movieService.addGenre("comedy");
-//        Movie movie2 = movieService.getMovieById(2);
-//        System.out.println(movie2.toString());
-
 
 
 

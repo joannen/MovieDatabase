@@ -56,12 +56,11 @@ public final class MovieRepositoryImpl implements MovieRepository {
                     .parameter(genreId)
                     .update();
         }
-
         return success == 1;
     }
 
 
-    public int updateMovie(Movie movie) {
+    public boolean updateMovie(Movie movie) {
         String sql = "UPDATE Movie SET title = ?, productionYear = ?, genreId = ? WHERE Movie.id =?";
         int genreId = getGenreId(movie.getGenre());
         return new Query<Movie>(URL).query(sql)
@@ -69,45 +68,14 @@ public final class MovieRepositoryImpl implements MovieRepository {
                 .parameter(movie.getProductionYear())
                 .parameter(genreId)
                 .parameter(movie.getId())
-                .update();
-
-        /* try (Connection connection = DriverManager.getConnection(URL)) {
-            connection.setAutoCommit(false);
-            try (PreparedStatement statement = connection.prepareStatement(sql)) {
-
-
-                statement.setString(1, movie.getTitle());
-                statement.setInt(2, movie.getProductionYear());
-                statement.setInt(3, genreId);
-                statement.setInt(4, movie.getId());
-                success = statement.executeUpdate(sql);
-                connection.commit();
-                return success;
-
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-                connection.rollback();
-                throw e;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } */
-
-        return new Query<Movie>(URL).query(sql).update(movie);
+                .update() == 1;
     }
 
-    public int deleteMovie(int id) {
-        try(Connection connection = DriverManager.getConnection(URL)) {
-            String sql = "DELETE FROM Movie WHERE id = ?";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, id);
-            return statement.executeUpdate(sql);
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0;
+    public boolean deleteMovie(int id) {
+        String sql = "DELETE FROM Movie where id = ?";
+        return new Query<Movie>(URL).query(sql)
+                .parameter(id)
+                .update() == 1;
     }
 
     @Override

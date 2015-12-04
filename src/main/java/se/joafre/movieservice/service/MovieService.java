@@ -26,11 +26,11 @@ public final class MovieService{
 
     }
 
-    public int update(Movie movie) {
+    public boolean update(Movie movie) {
         return movieRepository.updateMovie(movie);
     }
 
-    public int delete(int id) {
+    public boolean delete(int id) {
         return movieRepository.deleteMovie(id);
     }
 

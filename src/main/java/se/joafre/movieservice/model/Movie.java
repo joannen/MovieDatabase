@@ -49,4 +49,25 @@ public final class Movie {
                 ", genre='" + genre + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Movie movie = (Movie) o;
+
+        if (getProductionYear() != movie.getProductionYear()) return false;
+        if (getTitle() != null ? !getTitle().equals(movie.getTitle()) : movie.getTitle() != null) return false;
+        return !(getGenre() != null ? !getGenre().equals(movie.getGenre()) : movie.getGenre() != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getTitle() != null ? getTitle().hashCode() : 0;
+        result = 31 * result + getProductionYear();
+        result = 31 * result + (getGenre() != null ? getGenre().hashCode() : 0);
+        return result;
+    }
 }

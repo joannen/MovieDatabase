@@ -14,7 +14,7 @@ public interface MovieRepository {
 
     Movie getMovieById(int id);
 
-    void persistMovie(Movie movie);
+    boolean persistMovie(Movie movie);
 
     int updateMovie(Movie movie);
 

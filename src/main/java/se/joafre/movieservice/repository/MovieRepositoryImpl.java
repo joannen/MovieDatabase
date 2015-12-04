@@ -45,50 +45,19 @@ public final class MovieRepositoryImpl implements MovieRepository {
         return new Query<Movie>(URL).mapper(MOVIE_MAPPER).query(sql).execute().get(0);
     }
 
-    public  persistMovie(Movie movie) {
+    public boolean persistMovie(Movie movie) {
+        int success = 0;
         if(genreExists(movie.getGenre())) {
             String sql = "INSERT INTO Movie (title, productionYear, genreId) VALUES (?,?,?)";
             int genreId = getGenreId(movie.getGenre());
-            new Query<Movie>(URL).query(sql)
+            success = new Query<Movie>(URL).query(sql)
                     .parameter(movie.getTitle())
                     .parameter(movie.getProductionYear())
                     .parameter(genreId)
                     .update();
-            /* try (Connection connection = DriverManager.getConnection(URL)) {
-
-                connection.setAutoCommit(false);
-
-                try(PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-                    statement.setString(1, movie.getTitle());
-                    statement.setInt(2, movie.getProductionYear());
-                    statement.setInt(3, genreId);
-
-                    statement.executeUpdate(sql);
-
-
-                    ResultSet keys = statement.getGeneratedKeys();
-
-                    while (keys.next()) {
-                        movieKeys.add(keys.getLong(1));
-                        System.out.println(keys.getLong(1));
-                    }
-                    connection.commit();
-
-
-            } catch (SQLException e) {
-                connection.rollback();
-                    throw e;
-            }
-
-
-        } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-
-        }*/
         }
+
+        return success == 1;
     }
 
 

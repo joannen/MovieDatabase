@@ -1,5 +1,6 @@
 package se.joafre.movieservice;
 
+import se.joafre.movieservice.model.Actor;
 import se.joafre.movieservice.model.Movie;
 import se.joafre.movieservice.repository.MovieRepository;
 import se.joafre.movieservice.repository.MovieRepositoryImpl;
@@ -16,14 +17,7 @@ import java.util.List;
  */
 public final class Runner {
 
-    public final static Mapper<Movie> movieMapper = new Mapper<Movie>() {
-        @Override
-        public Movie map(ResultSet resultSet) throws SQLException {
 
-            return new Movie(resultSet.getInt(1), resultSet.getString(2), resultSet.getInt(3),resultSet.getString(4));
-
-        }
-    };
 
     public static void main(String[] args) {
 
@@ -35,6 +29,10 @@ public final class Runner {
         for (Movie movie : ms.getAllMovies()) {
             System.out.println(movie);
         }
+
+        Movie m = new Movie("wat", 1999, "action");
+
+        System.out.println(ms.getAllMovies().contains(m));
 
 
 

@@ -15,23 +15,15 @@ import java.util.List;
 public final class MovieRepositoryImpl implements MovieRepository {
 
 //    private final static String driver = "com.mysql.jdbc.Driver";
-    private final static String URL = "jdbc:mysql://localhost/MovieServiceDatabase?user=root&password=root";
-    private final List<Movie> movies = new ArrayList<>();
-    private final List<Long> movieKeys = new ArrayList<>();
+    private final static String URL = "jdbc:mysql://localhost/MovieServiceDatabase?user=root&password=hannele1";
 
-    private static final Mapper<Movie> MOVIE_MAPPER = new Mapper<Movie>() {
-        @Override
-        public Movie map(ResultSet resultSet) throws SQLException {
-            return new Movie(resultSet.getInt(1), resultSet.getString(2), resultSet.getInt(3), resultSet.getString(4));
-        }
-    };
+    private static final Mapper<Movie> MOVIE_MAPPER = resultSet -> new Movie(resultSet.getInt(1), resultSet.getString(2)
+            , resultSet.getInt(3), resultSet.getString(4));
 
-    final Mapper<Integer> countMapper = new Mapper<Integer>() {
-        @Override
-        public Integer map(ResultSet resultSet) throws SQLException {
-            return new Integer(resultSet.getInt(1));
-        }
-    };
+    private static final Mapper<Integer> countMapper = resultSet -> new Integer(resultSet.getInt(1));
+
+    private static final Mapper<Actor> ACTOR_MAPPER = resultSet -> new Actor(resultSet.getInt(1), resultSet.getString(2),
+            resultSet.getString(3), resultSet.getString(4));
 
     public List<Movie> getAllMovies() {
         String sql = "SELECT Movie.id, title, productionYear, name  from Movie JOIN Genre ON Movie.genreId= Genre.id";
@@ -80,7 +72,10 @@ public final class MovieRepositoryImpl implements MovieRepository {
 
     @Override
     public List<Actor> getAllActors() {
-        return null;
+        String sql = "SELECT * FROM Actor";
+
+        return new Query<Actor>(URL).query(sql).mapper(ACTOR_MAPPER).execute();
+
     }
 
     @Override
@@ -89,13 +84,19 @@ public final class MovieRepositoryImpl implements MovieRepository {
     }
 
     @Override
-    public int updateActor(Actor actor) {
-        return 0;
+    public boolean updateActor(Actor actor) {
+        String sql = "UPDATE Actor SET firstName = ?, middleName =?, lastName =? WHERE id=?";
+        return new Query<Actor>(URL).query(sql)
+                                    .parameter(actor.getFirstName())
+                                    .parameter(actor.getMiddleName())
+                                    .parameter(actor.getLastName())
+                                    .update() ==1;
     }
 
     @Override
-    public int deleteActor(String id) {
-        return 0;
+    public boolean deleteActor(String id) {
+        return false;
+
     }
 
     @Override

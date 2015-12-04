@@ -58,8 +58,8 @@ public final class Movie {
         Movie movie = (Movie) o;
 
         if (getProductionYear() != movie.getProductionYear()) return false;
-        if (getTitle() != null ? !getTitle().equals(movie.getTitle()) : movie.getTitle() != null) return false;
-        return !(getGenre() != null ? !getGenre().equals(movie.getGenre()) : movie.getGenre() != null);
+        if (getTitle() != null ? !getTitle().equalsIgnoreCase(movie.getTitle()) : movie.getTitle() != null) return false;
+        return !(getGenre() != null ? !getGenre().equalsIgnoreCase(movie.getGenre()) : movie.getGenre() != null);
 
     }
 

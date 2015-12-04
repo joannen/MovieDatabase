@@ -24,9 +24,9 @@ public interface MovieRepository {
 
     void persistActor(Actor actor);
 
-    int updateActor(Actor actor);
+    boolean updateActor(Actor actor);
 
-    int deleteActor(String id);
+    boolean deleteActor(String id);
 
     int addGenre(String genre);
 

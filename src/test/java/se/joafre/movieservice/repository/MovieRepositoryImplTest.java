@@ -1,42 +1,61 @@
 package se.joafre.movieservice.repository;
 
-
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
-import se.joafre.movieservice.model.Movie;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
-
+import static org.junit.Assert.*;
 
 /**
- * Created indirectly by the universe.
+ * Created by joanne on 04/12/15.
  */
-
-@RunWith(MockitoJUnitRunner.class)
 public class MovieRepositoryImplTest {
 
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
+    @Test
+    public void testGetAllMovies() throws Exception {
 
-    private Movie movie;
-    private MovieRepositoryImpl movieRepository = new MovieRepositoryImpl();
-
-    @Before
-    public void setup() {
-        movie = new Movie("Snap at the tutor", 1965, "Action");
     }
 
     @Test
-    public void addedMovieIsRetrievable() {
-        movieRepository.persistMovie(movie);
-        assertTrue(movieRepository.getAllMovies().contains(movie));
+    public void testGetMovieById() throws Exception {
+
     }
 
+    @Test
+    public void testPersistMovie() throws Exception {
 
+    }
+
+    @Test
+    public void testUpdateMovie() throws Exception {
+
+    }
+
+    @Test
+    public void testDeleteMovie() throws Exception {
+
+    }
+
+    @Test
+    public void testGetAllActors() throws Exception {
+
+    }
+
+    @Test
+    public void testPersistActor() throws Exception {
+
+    }
+
+    @Test
+    public void testUpdateActor() throws Exception {
+
+    }
+
+    @Test
+    public void testDeleteActor() throws Exception {
+
+    }
+
+    @Test
+    public void testAddGenre() throws Exception {
+
+    }
 }
